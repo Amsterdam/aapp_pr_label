@@ -1,0 +1,13 @@
+import {REVIEWED_STATES} from './constants.js'
+import {getReviews} from './getReviews.js'
+import type {PackageConfig} from './config'
+
+export const hasTeamReview = (
+  reviews: Awaited<ReturnType<typeof getReviews>>,
+  config: Required<PackageConfig>,
+): boolean =>
+  reviews.some(
+    review =>
+      config.reviewerUsernames.includes(review.user?.login ?? '') &&
+      REVIEWED_STATES.has(review.state),
+  )

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "types": [
+      "jest",
+      "node"
+    ],
+    "sourceMap": false,
+    "noEmit": true
+  },
+  "exclude": [
+    "jest.config.js"
+  ],
+  "include": [
+    "src",
+    "**/*.ts",
+    "**/*.mts"
+  ]
+}

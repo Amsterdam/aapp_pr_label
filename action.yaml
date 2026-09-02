@@ -1,0 +1,11 @@
+name: "Pr-label"
+description: "Add labels to a github PR"
+inputs:
+  token:
+    description: >
+      GitHub token used for API calls. Defaults to the workflow's GitHub token.
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: node24
+  main: dist/pr-label.cjs
