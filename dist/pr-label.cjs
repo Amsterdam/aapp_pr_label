@@ -27393,12 +27393,12 @@ var import_node_fs = require("node:fs");
 var import_node_path = __toESM(require("node:path"), 1);
 var import_yaml = __toESM(require_dist(), 1);
 var defaultConfig = {
+  codeReviewedLabel: "Code reviewed",
+  codeReviewedColor: "#99f490",
+  codeReviewedEnabled: true,
   copilotReadyLabel: "Copilot ready",
   copilotReadyColor: "#05b103",
   copilotReadyEnabled: true,
-  codeReviewedLabel: "Code reviewed",
-  codeReviewedColor: "#05b103",
-  codeReviewedEnabled: true,
   prDescriptionUpdateEnabled: true,
   prDescriptionCopilotSectionBefore: "# Changes",
   prDescriptionCopilotSectionAfter: "## Test instructions",

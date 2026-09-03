@@ -81,12 +81,12 @@ export type PackageConfig = {
 }
 
 const defaultConfig: Required<PackageConfig> = {
+  codeReviewedLabel: 'Code reviewed',
+  codeReviewedColor: '#99f490',
+  codeReviewedEnabled: true,
   copilotReadyLabel: 'Copilot ready',
   copilotReadyColor: '#05b103',
   copilotReadyEnabled: true,
-  codeReviewedLabel: 'Code reviewed',
-  codeReviewedColor: '#05b103',
-  codeReviewedEnabled: true,
   prDescriptionUpdateEnabled: true,
   prDescriptionCopilotSectionBefore: '# Changes',
   prDescriptionCopilotSectionAfter: '## Test instructions',

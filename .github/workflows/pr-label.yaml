@@ -18,14 +18,14 @@ jobs:
 
             - uses: ./
               with:
-                  code-reviewed-color: "#ff0000"
-                  code-reviewed-enabled: false
-                  code-reviewed-label: "c reviewed"
+                  code-reviewed-color: "#99f490"
+                  code-reviewed-enabled: true
+                  code-reviewed-label: "Code reviewed"
                   copilot-logins: |
-                      gh-copilot[bot]
-                  copilot-ready-color: "#ff0000"
-                  copilot-ready-enabled: false
-                  copilot-ready-label: "c ready"
+                      github-copilot[bot]
+                  copilot-ready-color: "#05b103"
+                  copilot-ready-enabled: true
+                  copilot-ready-label: "Copilot ready"
                   labels: |
                       "src/.*\\.ts":
                         name: "src"
@@ -33,9 +33,17 @@ jobs:
                       "src/.*\\.test\\.ts":
                         name: "test"
                         color: "#00ff00"
-                  pr-description-copilot-section-after: "## Copilot end"
-                  pr-description-copilot-section-before: "## Copilot start"
-                  pr-description-update-enabled: false
+                      "^(?:pipelines/|\\.github/(?:workflows|actions)/)": 
+                        name: 'pipelines'
+                        color: '#036d66'
+                        description: 'Pipeline related'
+                      "^package-lock\\.json$": 
+                        name: 'dependencies'
+                        color: '#634991'
+                        description: 'Dependency related'
+                  pr-description-copilot-section-before: "# Changes"
+                  pr-description-copilot-section-after: "## Test instructions"
+                  pr-description-update-enabled: true
                   reviewer-usernames: |
                       frankfe-amsterdam
                       RikSchefferAmsterdam
