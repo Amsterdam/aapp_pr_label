@@ -28,12 +28,12 @@ jobs:
                   copilot-ready-label: "c ready"
                   labels: |
                       {
-                          "src/**/*.ts": {
-                              "label": "src",
+                          "src/.*\\.ts": {
+                              "name": "src",
                               "color": "#ff0000"
                           },
-                          "src/**/*.test.ts": {
-                              "label": "test",
+                          "src/.*\\.test\\.ts": {
+                              "name": "test",
                               "color": "#00ff00"
                           }
                       }
