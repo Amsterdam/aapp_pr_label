@@ -1,7 +1,9 @@
-// We add our custom d.ts files here, because tsc-files ignores the `includes` in tsconfig.json by design and hence will not find the custom definitions
+// We add our custom d.ts files here, because tsc-files ignores the
+// `includes` in tsconfig.json by design and hence will not find the custom
+// definitions.
 const definitions = []
 
-module.exports = {
+export default {
   '*.(js|jsx|ts|tsx|mts)': 'npx oxlint --fix',
   '!(*package-lock).(js|jsx|ts|tsx|json|md|yml|yaml|css)': 'npx oxfmt',
   '*.(ts|tsx)': `npx tsc-files --noEmit ${definitions.join(' ')}`,
