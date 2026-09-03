@@ -9,7 +9,7 @@ export type PackageConfig = {
   /**
    * Hex color used when creating or updating the label that marks a pull request as code reviewed.
    * @type {string}
-   * @default '#05b103'
+   * @default '#99f490'
    */
   codeReviewedColor?: string
   /**
@@ -171,7 +171,7 @@ const getOptionalListActionInput = (
   }
 
   return inputValue
-    .split(/\r?\n|,/) 
+    .split(/\r?\n|,/)
     .map(value => value.trim())
     .filter(value => value.length > 0)
 }
@@ -214,7 +214,9 @@ const getActionInputConfig = (): PackageConfig => {
     ],
     [
       'labels',
-      getOptionalYamlActionInput<Record<string, Label>>(configInputNames.labels),
+      getOptionalYamlActionInput<Record<string, Label>>(
+        configInputNames.labels,
+      ),
     ],
     [
       'prDescriptionCopilotSectionAfter',
@@ -222,17 +224,23 @@ const getActionInputConfig = (): PackageConfig => {
     ],
     [
       'prDescriptionCopilotSectionBefore',
-      getOptionalActionInput(configInputNames.prDescriptionCopilotSectionBefore),
+      getOptionalActionInput(
+        configInputNames.prDescriptionCopilotSectionBefore,
+      ),
     ],
     [
       'prDescriptionUpdateEnabled',
-      getOptionalBooleanActionInput(configInputNames.prDescriptionUpdateEnabled),
+      getOptionalBooleanActionInput(
+        configInputNames.prDescriptionUpdateEnabled,
+      ),
     ],
     [
       'reviewerUsernames',
       getOptionalListActionInput(configInputNames.reviewerUsernames),
     ],
-  ] satisfies Array<[keyof PackageConfig, PackageConfig[keyof PackageConfig] | undefined]>
+  ] satisfies Array<
+    [keyof PackageConfig, PackageConfig[keyof PackageConfig] | undefined]
+  >
 
   return Object.fromEntries(
     actionInputEntries.filter(([, inputValue]) => inputValue !== undefined),

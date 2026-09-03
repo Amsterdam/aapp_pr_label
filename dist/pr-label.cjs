@@ -27507,7 +27507,9 @@ var getActionInputConfig = () => {
     ],
     [
       "labels",
-      getOptionalYamlActionInput(configInputNames.labels)
+      getOptionalYamlActionInput(
+        configInputNames.labels
+      )
     ],
     [
       "prDescriptionCopilotSectionAfter",
@@ -27515,11 +27517,15 @@ var getActionInputConfig = () => {
     ],
     [
       "prDescriptionCopilotSectionBefore",
-      getOptionalActionInput(configInputNames.prDescriptionCopilotSectionBefore)
+      getOptionalActionInput(
+        configInputNames.prDescriptionCopilotSectionBefore
+      )
     ],
     [
       "prDescriptionUpdateEnabled",
-      getOptionalBooleanActionInput(configInputNames.prDescriptionUpdateEnabled)
+      getOptionalBooleanActionInput(
+        configInputNames.prDescriptionUpdateEnabled
+      )
     ],
     [
       "reviewerUsernames",
