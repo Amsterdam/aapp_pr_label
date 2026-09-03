@@ -171,7 +171,7 @@ const getOptionalListActionInput = (
   }
 
   return inputValue
-    .split(/\r?\n|,/) 
+    .split(/\r?\n|,/)
     .map(value => value.trim())
     .filter(value => value.length > 0)
 }
