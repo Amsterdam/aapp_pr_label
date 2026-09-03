@@ -28,7 +28,7 @@ inputs:
     description: Label name used to mark pull requests as Copilot ready.
     required: false
   labels:
-    description: JSON object mapping file path patterns to label definitions.
+    description: YAML object mapping file path patterns to label definitions.
     required: false
   pr-description-copilot-section-after:
     description: Heading after the Copilot-managed pull request description section.

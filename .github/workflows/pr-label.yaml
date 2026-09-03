@@ -27,16 +27,12 @@ jobs:
                   copilot-ready-enabled: false
                   copilot-ready-label: "c ready"
                   labels: |
-                      {
-                          "src/.*\\.ts": {
-                              "name": "src",
-                              "color": "#ff0000"
-                          },
-                          "src/.*\\.test\\.ts": {
-                              "name": "test",
-                              "color": "#00ff00"
-                          }
-                      }
+                      "src/.*\\.ts":
+                        name: "src"
+                        color: "#ff0000"
+                      "src/.*\\.test\\.ts":
+                        name: "test"
+                        color: "#00ff00"
                   pr-description-copilot-section-after: "## Copilot end"
                   pr-description-copilot-section-before: "## Copilot start"
                   pr-description-update-enabled: false

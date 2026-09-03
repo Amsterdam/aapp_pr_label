@@ -2,6 +2,7 @@
 import * as core from '@actions/core'
 import {existsSync, readFileSync} from 'node:fs'
 import path from 'node:path'
+import {parse as parseYaml} from 'yaml'
 import type {Label} from './types'
 
 export type PackageConfig = {
@@ -175,12 +176,10 @@ const getOptionalListActionInput = (
     .filter(value => value.length > 0)
 }
 
-const getOptionalJsonActionInput = <T>(
-  inputName: string,
-): T | undefined => {
+const getOptionalYamlActionInput = <T>(inputName: string): T | undefined => {
   const inputValue = getOptionalActionInput(inputName)
 
-  return inputValue === undefined ? undefined : (JSON.parse(inputValue) as T)
+  return inputValue === undefined ? undefined : (parseYaml(inputValue) as T)
 }
 
 const getActionInputConfig = (): PackageConfig => {
@@ -215,7 +214,7 @@ const getActionInputConfig = (): PackageConfig => {
     ],
     [
       'labels',
-      getOptionalJsonActionInput<Record<string, Label>>(configInputNames.labels),
+      getOptionalYamlActionInput<Record<string, Label>>(configInputNames.labels),
     ],
     [
       'prDescriptionCopilotSectionAfter',

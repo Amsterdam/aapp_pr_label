@@ -328,6 +328,33 @@ describe('loadConfig', () => {
     ])
   })
 
+  it('parses YAML labels action input', async () => {
+    const temporaryDirectory = createTemporaryDirectory()
+
+    const config = await loadConfigFromDirectory({
+      workingDirectory: temporaryDirectory,
+      actionInputs: {
+        labels: `"src/.*\\.ts":
+  name: "src"
+  color: "#ff0000"
+"src/.*\\.test\\.ts":
+  name: "test"
+  color: "#00ff00"`,
+      },
+    })
+
+    expect(config.labels).toEqual({
+      'src/.*\\.ts': {
+        color: '#ff0000',
+        name: 'src',
+      },
+      'src/.*\\.test\\.ts': {
+        color: '#00ff00',
+        name: 'test',
+      },
+    })
+  })
+
   it.each([
     {
       description: 'default export',
