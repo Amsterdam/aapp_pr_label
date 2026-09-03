@@ -32030,14 +32030,13 @@ var main = async (config) => {
 var prLabel = async () => {
   try {
     const config = await loadConfig();
-    console.log("Loaded config:", JSON.stringify(config, null, 2));
     await main(config);
   } catch (e) {
     setFailed(e.message);
     throw e;
   }
 };
-prLabel();
+void prLabel();
 /*! Bundled license information:
 
 undici/lib/web/fetch/body.js:
