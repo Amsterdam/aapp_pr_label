@@ -14,6 +14,13 @@ jobs:
     test-action:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: ./
+              with:
+                  reviewer-usernames: |
+                      frankfe-amsterdam
+                      RikSchefferAmsterdam
+                      WouterAms
+                      fhaver-amsterdam
+                      jjbeekman

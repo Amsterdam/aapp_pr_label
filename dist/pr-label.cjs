@@ -20039,6 +20039,17 @@ function getInput(name, options) {
   }
   return val.trim();
 }
+function getBooleanInput(name, options) {
+  const trueValue = ["true", "True", "TRUE"];
+  const falseValue = ["false", "False", "FALSE"];
+  const val = getInput(name, options);
+  if (trueValue.includes(val))
+    return true;
+  if (falseValue.includes(val))
+    return false;
+  throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
+Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
+}
 function setFailed(message) {
   process.exitCode = ExitCode.Failure;
   error(message);
@@ -20103,6 +20114,94 @@ var candidatePaths = [
   "pr-label.config.cjs",
   "pr-label.config.js"
 ];
+var configInputNames = {
+  codeReviewedColor: "code-reviewed-color",
+  codeReviewedEnabled: "code-reviewed-enabled",
+  codeReviewedLabel: "code-reviewed-label",
+  copilotLogins: "copilot-logins",
+  copilotReadyColor: "copilot-ready-color",
+  copilotReadyEnabled: "copilot-ready-enabled",
+  copilotReadyLabel: "copilot-ready-label",
+  labels: "labels",
+  prDescriptionCopilotSectionAfter: "pr-description-copilot-section-after",
+  prDescriptionCopilotSectionBefore: "pr-description-copilot-section-before",
+  prDescriptionUpdateEnabled: "pr-description-update-enabled",
+  reviewerUsernames: "reviewer-usernames"
+};
+var getOptionalActionInput = (inputName) => {
+  const inputValue = getInput(inputName);
+  return inputValue === "" ? void 0 : inputValue;
+};
+var getOptionalBooleanActionInput = (inputName) => {
+  const inputValue = getOptionalActionInput(inputName);
+  return inputValue === void 0 ? void 0 : getBooleanInput(inputName);
+};
+var getOptionalListActionInput = (inputName) => {
+  const inputValue = getOptionalActionInput(inputName);
+  if (inputValue === void 0) {
+    return void 0;
+  }
+  return inputValue.split(/\r?\n|,/).map((value) => value.trim()).filter((value) => value.length > 0);
+};
+var getOptionalJsonActionInput = (inputName) => {
+  const inputValue = getOptionalActionInput(inputName);
+  return inputValue === void 0 ? void 0 : JSON.parse(inputValue);
+};
+var getActionInputConfig = () => {
+  const actionInputEntries = [
+    [
+      "codeReviewedColor",
+      getOptionalActionInput(configInputNames.codeReviewedColor)
+    ],
+    [
+      "codeReviewedEnabled",
+      getOptionalBooleanActionInput(configInputNames.codeReviewedEnabled)
+    ],
+    [
+      "codeReviewedLabel",
+      getOptionalActionInput(configInputNames.codeReviewedLabel)
+    ],
+    [
+      "copilotLogins",
+      getOptionalListActionInput(configInputNames.copilotLogins)
+    ],
+    [
+      "copilotReadyColor",
+      getOptionalActionInput(configInputNames.copilotReadyColor)
+    ],
+    [
+      "copilotReadyEnabled",
+      getOptionalBooleanActionInput(configInputNames.copilotReadyEnabled)
+    ],
+    [
+      "copilotReadyLabel",
+      getOptionalActionInput(configInputNames.copilotReadyLabel)
+    ],
+    [
+      "labels",
+      getOptionalJsonActionInput(configInputNames.labels)
+    ],
+    [
+      "prDescriptionCopilotSectionAfter",
+      getOptionalActionInput(configInputNames.prDescriptionCopilotSectionAfter)
+    ],
+    [
+      "prDescriptionCopilotSectionBefore",
+      getOptionalActionInput(configInputNames.prDescriptionCopilotSectionBefore)
+    ],
+    [
+      "prDescriptionUpdateEnabled",
+      getOptionalBooleanActionInput(configInputNames.prDescriptionUpdateEnabled)
+    ],
+    [
+      "reviewerUsernames",
+      getOptionalListActionInput(configInputNames.reviewerUsernames)
+    ]
+  ];
+  return Object.fromEntries(
+    actionInputEntries.filter(([, inputValue]) => inputValue !== void 0)
+  );
+};
 var parseConfigPathArgument = (argv) => {
   const configFlagIndex = argv.indexOf("--config");
   if (configFlagIndex === -1) {
@@ -20142,9 +20241,11 @@ var getConfig = async () => {
 };
 var loadConfig = async () => {
   const config = await getConfig();
+  const actionInputConfig = getActionInputConfig();
   return {
     ...defaultConfig,
-    ...config
+    ...config,
+    ...actionInputConfig
   };
 };
 

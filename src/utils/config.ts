@@ -1,4 +1,5 @@
 /* eslint-disable no-process-env */
+import * as core from '@actions/core'
 import {existsSync, readFileSync} from 'node:fs'
 import path from 'node:path'
 import type {Label} from './types'
@@ -130,6 +131,115 @@ const candidatePaths = [
   'pr-label.config.js',
 ]
 
+const configInputNames: Record<keyof PackageConfig, string> = {
+  codeReviewedColor: 'code-reviewed-color',
+  codeReviewedEnabled: 'code-reviewed-enabled',
+  codeReviewedLabel: 'code-reviewed-label',
+  copilotLogins: 'copilot-logins',
+  copilotReadyColor: 'copilot-ready-color',
+  copilotReadyEnabled: 'copilot-ready-enabled',
+  copilotReadyLabel: 'copilot-ready-label',
+  labels: 'labels',
+  prDescriptionCopilotSectionAfter: 'pr-description-copilot-section-after',
+  prDescriptionCopilotSectionBefore: 'pr-description-copilot-section-before',
+  prDescriptionUpdateEnabled: 'pr-description-update-enabled',
+  reviewerUsernames: 'reviewer-usernames',
+}
+
+const getOptionalActionInput = (inputName: string): string | undefined => {
+  const inputValue = core.getInput(inputName)
+
+  return inputValue === '' ? undefined : inputValue
+}
+
+const getOptionalBooleanActionInput = (
+  inputName: string,
+): boolean | undefined => {
+  const inputValue = getOptionalActionInput(inputName)
+
+  return inputValue === undefined ? undefined : core.getBooleanInput(inputName)
+}
+
+const getOptionalListActionInput = (
+  inputName: string,
+): string[] | undefined => {
+  const inputValue = getOptionalActionInput(inputName)
+
+  if (inputValue === undefined) {
+    return undefined
+  }
+
+  return inputValue
+    .split(/\r?\n|,/) 
+    .map(value => value.trim())
+    .filter(value => value.length > 0)
+}
+
+const getOptionalJsonActionInput = <T>(
+  inputName: string,
+): T | undefined => {
+  const inputValue = getOptionalActionInput(inputName)
+
+  return inputValue === undefined ? undefined : (JSON.parse(inputValue) as T)
+}
+
+const getActionInputConfig = (): PackageConfig => {
+  const actionInputEntries = [
+    [
+      'codeReviewedColor',
+      getOptionalActionInput(configInputNames.codeReviewedColor),
+    ],
+    [
+      'codeReviewedEnabled',
+      getOptionalBooleanActionInput(configInputNames.codeReviewedEnabled),
+    ],
+    [
+      'codeReviewedLabel',
+      getOptionalActionInput(configInputNames.codeReviewedLabel),
+    ],
+    [
+      'copilotLogins',
+      getOptionalListActionInput(configInputNames.copilotLogins),
+    ],
+    [
+      'copilotReadyColor',
+      getOptionalActionInput(configInputNames.copilotReadyColor),
+    ],
+    [
+      'copilotReadyEnabled',
+      getOptionalBooleanActionInput(configInputNames.copilotReadyEnabled),
+    ],
+    [
+      'copilotReadyLabel',
+      getOptionalActionInput(configInputNames.copilotReadyLabel),
+    ],
+    [
+      'labels',
+      getOptionalJsonActionInput<Record<string, Label>>(configInputNames.labels),
+    ],
+    [
+      'prDescriptionCopilotSectionAfter',
+      getOptionalActionInput(configInputNames.prDescriptionCopilotSectionAfter),
+    ],
+    [
+      'prDescriptionCopilotSectionBefore',
+      getOptionalActionInput(configInputNames.prDescriptionCopilotSectionBefore),
+    ],
+    [
+      'prDescriptionUpdateEnabled',
+      getOptionalBooleanActionInput(configInputNames.prDescriptionUpdateEnabled),
+    ],
+    [
+      'reviewerUsernames',
+      getOptionalListActionInput(configInputNames.reviewerUsernames),
+    ],
+  ] satisfies Array<[keyof PackageConfig, PackageConfig[keyof PackageConfig] | undefined]>
+
+  return Object.fromEntries(
+    actionInputEntries.filter(([, inputValue]) => inputValue !== undefined),
+  ) as PackageConfig
+}
+
 const parseConfigPathArgument = (argv: string[]): string | undefined => {
   const configFlagIndex = argv.indexOf('--config')
 
@@ -193,9 +303,11 @@ const getConfig = async (): Promise<PackageConfig> => {
 
 export const loadConfig = async (): Promise<Required<PackageConfig>> => {
   const config = await getConfig()
+  const actionInputConfig = getActionInputConfig()
 
   return {
     ...defaultConfig,
     ...config,
+    ...actionInputConfig,
   }
 }

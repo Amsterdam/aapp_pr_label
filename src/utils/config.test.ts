@@ -10,6 +10,27 @@ const originalArguments = [...process.argv]
 const originalWorkingDirectory = process.cwd()
 // oxlint-disable-next-line typescript/no-unsafe-assignment
 const originalPrLabelConfig = process.env.PR_LABEL_CONFIG
+const actionInputNames = [
+  'code-reviewed-color',
+  'code-reviewed-enabled',
+  'code-reviewed-label',
+  'copilot-logins',
+  'copilot-ready-color',
+  'copilot-ready-enabled',
+  'copilot-ready-label',
+  'labels',
+  'pr-description-copilot-section-after',
+  'pr-description-copilot-section-before',
+  'pr-description-update-enabled',
+  'reviewer-usernames',
+] as const
+const originalActionInputs = Object.fromEntries(
+  actionInputNames.map(inputName => {
+    const environmentVariableName = `INPUT_${inputName.toUpperCase()}`
+
+    return [environmentVariableName, process.env[environmentVariableName]]
+  }),
+)
 const temporaryDirectories: string[] = []
 const configModuleUrl = pathToFileURL(
   path.join(originalWorkingDirectory, 'nodescripts/pr-label/utils/config.mts'),
@@ -38,10 +59,12 @@ const writeConfigFile = (
 }
 
 const loadConfigFromDirectory = async ({
+  actionInputs,
   argumentsOverride,
   prLabelConfig,
   workingDirectory,
 }: {
+  actionInputs?: Record<string, string>
   argumentsOverride?: string[]
   prLabelConfig?: string
   workingDirectory: string
@@ -58,14 +81,24 @@ const loadConfigFromDirectory = async ({
     process.env.PR_LABEL_CONFIG = prLabelConfig
   }
 
+  for (const inputName of actionInputNames) {
+    delete process.env[`INPUT_${inputName.toUpperCase()}`]
+  }
+
+  for (const [inputName, inputValue] of Object.entries(actionInputs ?? {})) {
+    process.env[`INPUT_${inputName.toUpperCase()}`] = inputValue
+  }
+
   return loadConfig()
 }
 
 const loadConfigInNodeProcess = ({
+  actionInputs,
   argumentsOverride,
   prLabelConfig,
   workingDirectory,
 }: {
+  actionInputs?: Record<string, string>
   argumentsOverride?: string[]
   prLabelConfig?: string
   workingDirectory: string
@@ -76,6 +109,14 @@ const loadConfigInNodeProcess = ({
     delete environment.PR_LABEL_CONFIG
   } else {
     environment.PR_LABEL_CONFIG = prLabelConfig
+  }
+
+  for (const inputName of actionInputNames) {
+    delete environment[`INPUT_${inputName.toUpperCase()}`]
+  }
+
+  for (const [inputName, inputValue] of Object.entries(actionInputs ?? {})) {
+    environment[`INPUT_${inputName.toUpperCase()}`] = inputValue
   }
 
   const stdout = execFileSync(
@@ -107,6 +148,16 @@ describe('loadConfig', () => {
     } else {
       // oxlint-disable-next-line typescript/no-unsafe-assignment
       process.env.PR_LABEL_CONFIG = originalPrLabelConfig
+    }
+
+    for (const [environmentVariableName, originalValue] of Object.entries(
+      originalActionInputs,
+    )) {
+      if (originalValue === undefined) {
+        delete process.env[environmentVariableName]
+      } else {
+        process.env[environmentVariableName] = originalValue
+      }
     }
 
     for (const temporaryDirectory of temporaryDirectories.splice(0)) {
@@ -215,6 +266,66 @@ describe('loadConfig', () => {
       description: 'Android related',
       name: 'android',
     })
+  })
+
+  it('prefers action inputs over file config values', async () => {
+    const temporaryDirectory = createTemporaryDirectory()
+
+    writeConfigFile(
+      temporaryDirectory,
+      'pr-label.config.json',
+      JSON.stringify({
+        codeReviewedEnabled: false,
+        copilotReadyLabel: 'from file',
+      }),
+    )
+
+    const config = await loadConfigFromDirectory({
+      workingDirectory: temporaryDirectory,
+      actionInputs: {
+        'code-reviewed-enabled': 'true',
+        'copilot-ready-label': 'from input',
+      },
+    })
+
+    expect(config.codeReviewedEnabled).toBe(true)
+    expect(config.copilotReadyLabel).toBe('from input')
+  })
+
+  it('parses list and JSON action inputs', async () => {
+    const temporaryDirectory = createTemporaryDirectory()
+
+    const config = await loadConfigFromDirectory({
+      workingDirectory: temporaryDirectory,
+      actionInputs: {
+        'copilot-logins': 'copilot-one, copilot-two\n copilot-three',
+        labels: JSON.stringify({
+          '^docs/': {
+            color: '#ffffff',
+            description: 'Documentation related',
+            name: 'docs',
+          },
+        }),
+        'reviewer-usernames': 'reviewer-one\nreviewer-two',
+      },
+    })
+
+    expect(config.copilotLogins).toEqual([
+      'copilot-one',
+      'copilot-two',
+      'copilot-three',
+    ])
+    expect(config.labels).toEqual({
+      '^docs/': {
+        color: '#ffffff',
+        description: 'Documentation related',
+        name: 'docs',
+      },
+    })
+    expect(config.reviewerUsernames).toEqual([
+      'reviewer-one',
+      'reviewer-two',
+    ])
   })
 
   it.each([
