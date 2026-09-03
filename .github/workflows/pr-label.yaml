@@ -18,6 +18,28 @@ jobs:
 
             - uses: ./
               with:
+                  code-reviewed-color: "#ff0000"
+                  code-reviewed-enabled: false
+                  code-reviewed-label: "c reviewed"
+                  copilot-logins: |
+                      gh-copilot[bot]
+                  copilot-ready-color: "#ff0000"
+                  copilot-ready-enabled: false
+                  copilot-ready-label: "c ready"
+                  labels: |
+                      {
+                          "src/**/*.ts": {
+                              "label": "src",
+                              "color": "#ff0000"
+                          },
+                          "src/**/*.test.ts": {
+                              "label": "test",
+                              "color": "#00ff00"
+                          }
+                      }
+                  pr-description-copilot-section-after: "## Copilot end"
+                  pr-description-copilot-section-before: "## Copilot start"
+                  pr-description-update-enabled: false
                   reviewer-usernames: |
                       frankfe-amsterdam
                       RikSchefferAmsterdam
