@@ -6,6 +6,17 @@ import path from 'node:path'
 import {pathToFileURL} from 'node:url'
 import {loadConfig} from './config'
 
+jest.mock('@actions/core', () => ({
+  getBooleanInput: jest.fn((inputName: string) => {
+    const inputValue = process.env[`INPUT_${inputName.toUpperCase()}`]
+
+    return inputValue?.toLowerCase() === 'true'
+  }),
+  getInput: jest.fn(
+    (inputName: string) => process.env[`INPUT_${inputName.toUpperCase()}`] ?? '',
+  ),
+}), {virtual: true})
+
 const originalArguments = [...process.argv]
 const originalWorkingDirectory = process.cwd()
 // oxlint-disable-next-line typescript/no-unsafe-assignment
@@ -33,7 +44,7 @@ const originalActionInputs = Object.fromEntries(
 )
 const temporaryDirectories: string[] = []
 const configModuleUrl = pathToFileURL(
-  path.join(originalWorkingDirectory, 'nodescripts/pr-label/utils/config.mts'),
+  path.join(originalWorkingDirectory, 'src/utils/config.ts'),
 ).href
 
 const createTemporaryDirectory = (): string => {
@@ -72,7 +83,7 @@ const loadConfigFromDirectory = async ({
   process.chdir(workingDirectory)
   process.argv = argumentsOverride ?? [
     'node',
-    'nodescripts/pr-label/pr-label.mts',
+    'src/pr-label.ts',
   ]
 
   if (prLabelConfig === undefined) {
@@ -123,6 +134,7 @@ const loadConfigInNodeProcess = ({
     // eslint-disable-next-line sonarjs/no-os-command-from-path
     'node',
     [
+      '--experimental-strip-types',
       '--input-type=module',
       '--eval',
       `import {loadConfig} from ${JSON.stringify(configModuleUrl)}; const config = await loadConfig(); process.stdout.write(JSON.stringify(config));`,
@@ -189,7 +201,7 @@ describe('loadConfig', () => {
       prLabelConfig: 'environment.json',
       argumentsOverride: [
         'node',
-        'nodescripts/pr-label/pr-label.mts',
+        'src/pr-label.ts',
         '--config',
         'cli.json',
       ],
@@ -334,10 +346,10 @@ describe('loadConfig', () => {
     const config = await loadConfigFromDirectory({
       workingDirectory: temporaryDirectory,
       actionInputs: {
-        labels: `"src/.*\\.ts":
+        labels: `'src/.*\\.ts':
   name: "src"
   color: "#ff0000"
-"src/.*\\.test\\.ts":
+'src/.*\\.test\\.ts':
   name: "test"
   color: "#00ff00"`,
       },
@@ -395,7 +407,7 @@ describe('loadConfig', () => {
     })
 
     expect(config).toMatchObject({
-      codeReviewedColor: '#05b103',
+      codeReviewedColor: '#99f490',
       codeReviewedEnabled: true,
       codeReviewedLabel: 'Code reviewed',
       copilotReadyColor: '#05b103',

@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 
-import {HTTP_STATUS_UNPROCESSABLE_ENTITY} from './constants.js'
+import {HTTP_STATUS_UNPROCESSABLE_ENTITY} from './constants'
 import {octokit, context} from './octokit'
 
 export const ensureRepoLabelExists = async (

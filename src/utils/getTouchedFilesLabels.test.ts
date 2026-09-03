@@ -1,4 +1,4 @@
-import {getTouchedFilesLabels} from './getTouchedFilesLabels.js'
+import {getTouchedFilesLabels} from './getTouchedFilesLabels'
 import type {PackageConfig} from './config'
 
 const createConfig = (

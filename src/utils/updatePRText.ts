@@ -1,6 +1,6 @@
-import {getReviews} from './getReviews.js'
-import {octokit, context} from './octokit.js'
-import {sanitizeCopilotReviewBody} from './sanitizeCopilotReviewBody.js'
+import {getReviews} from './getReviews'
+import {octokit, context} from './octokit'
+import {sanitizeCopilotReviewBody} from './sanitizeCopilotReviewBody'
 import type {PackageConfig} from './config'
 
 export const updatePRText = async (

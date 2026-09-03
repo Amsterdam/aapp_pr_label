@@ -31759,7 +31759,7 @@ var checkCodeReviewed = async (reviews, pullNumber, alreadyOnPr, config) => {
   }
 };
 
-// src/utils/isCopilotLogin.mts
+// src/utils/isCopilotLogin.ts
 var isCopilotLogin = (login, config) => {
   if (!login) {
     return false;

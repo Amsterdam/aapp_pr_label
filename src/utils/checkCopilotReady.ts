@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {addLabels} from './addLabels.js'
+import {addLabels} from './addLabels'
 import {getOpenCopilotReviewComments} from './getOpenCopilotReviewComments'
 import {context, octokit} from './octokit'
 import type {PackageConfig} from './config'
