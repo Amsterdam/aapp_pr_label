@@ -7,6 +7,8 @@ const prLabel = async (): Promise<void> => {
 
     const config = await loadConfig()
 
+    console.log('Loaded config:', JSON.stringify(config, null, 2))
+
     await main(config)
   } catch (e: unknown) {
     core.setFailed((e as Error).message)

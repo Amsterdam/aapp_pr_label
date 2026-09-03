@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 
-import {isCopilotLogin} from './isCopilotLogin.mjs'
+import {isCopilotLogin} from './isCopilotLogin'
 import {octokit, context} from './octokit'
 import type {PackageConfig} from './config'
 

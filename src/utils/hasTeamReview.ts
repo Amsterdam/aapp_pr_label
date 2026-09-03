@@ -1,5 +1,5 @@
-import {REVIEWED_STATES} from './constants.js'
-import {getReviews} from './getReviews.js'
+import {REVIEWED_STATES} from './constants'
+import {getReviews} from './getReviews'
 import type {PackageConfig} from './config'
 
 export const hasTeamReview = (

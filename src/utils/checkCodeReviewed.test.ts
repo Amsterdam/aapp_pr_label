@@ -6,15 +6,15 @@ jest.mock(
   {virtual: true},
 )
 
-jest.mock('./addLabels.mts', () => ({
+jest.mock('./addLabels.ts', () => ({
   addLabels: jest.fn(),
 }))
 
-jest.mock('./hasTeamReview.mts', () => ({
+jest.mock('./hasTeamReview.ts', () => ({
   hasTeamReview: jest.fn(),
 }))
 
-jest.mock('./octokit.mts', () => ({
+jest.mock('./octokit.ts', () => ({
   context: {
     repo: {
       owner: 'Amsterdam',
@@ -34,8 +34,8 @@ jest.mock('./octokit.mts', () => ({
 }))
 
 import * as core from '@actions/core'
-import {addLabels} from './addLabels.js'
-import {checkCodeReviewed} from './checkCodeReviewed.js'
+import {addLabels} from './addLabels'
+import {checkCodeReviewed} from './checkCodeReviewed'
 import {hasTeamReview} from './hasTeamReview'
 import {octokit} from './octokit'
 import type {PackageConfig} from './config'

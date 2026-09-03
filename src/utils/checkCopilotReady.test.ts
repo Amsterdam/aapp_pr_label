@@ -6,15 +6,15 @@ jest.mock(
   {virtual: true},
 )
 
-jest.mock('./addLabels.mts', () => ({
+jest.mock('./addLabels.ts', () => ({
   addLabels: jest.fn(),
 }))
 
-jest.mock('./getOpenCopilotReviewComments.mts', () => ({
+jest.mock('./getOpenCopilotReviewComments.ts', () => ({
   getOpenCopilotReviewComments: jest.fn(),
 }))
 
-jest.mock('./octokit.mts', () => ({
+jest.mock('./octokit.ts', () => ({
   context: {
     repo: {
       owner: 'Amsterdam',

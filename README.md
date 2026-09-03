@@ -6,4 +6,4 @@ Build the action bundle with:
 npm run build
 ```
 
-The distributable GitHub Action entrypoint is `dist/pr-label.js`, as referenced by `action.yaml`.
+The distributable GitHub Action entrypoint is `dist/pr-label.cjs`, as referenced by `action.yaml`.

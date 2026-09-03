@@ -6,6 +6,42 @@ inputs:
       GitHub token used for API calls. Defaults to the workflow's GitHub token.
     required: false
     default: ${{ github.token }}
+  code-reviewed-color:
+    description: Hex color for the code reviewed label.
+    required: false
+  code-reviewed-enabled:
+    description: Whether the code reviewed label automation is enabled.
+    required: false
+  code-reviewed-label:
+    description: Label name used to mark pull requests as code reviewed.
+    required: false
+  copilot-logins:
+    description: Comma-separated or newline-separated GitHub logins treated as Copilot accounts.
+    required: false
+  copilot-ready-color:
+    description: Hex color for the Copilot ready label.
+    required: false
+  copilot-ready-enabled:
+    description: Whether the Copilot ready label automation is enabled.
+    required: false
+  copilot-ready-label:
+    description: Label name used to mark pull requests as Copilot ready.
+    required: false
+  labels:
+    description: YAML object mapping file path patterns to label definitions.
+    required: false
+  pr-description-copilot-section-after:
+    description: Heading after the Copilot-managed pull request description section.
+    required: false
+  pr-description-copilot-section-before:
+    description: Heading before the Copilot-managed pull request description section.
+    required: false
+  pr-description-update-enabled:
+    description: Whether automatic pull request description updates are enabled.
+    required: false
+  reviewer-usernames:
+    description: Comma-separated or newline-separated GitHub usernames treated as reviewers.
+    required: false
 runs:
   using: node24
   main: dist/pr-label.cjs

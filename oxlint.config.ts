@@ -24,7 +24,7 @@ export default defineConfig({
   overrides: [
     // Jest
     {
-      files: ['*.test.ts', '*.test.tsx', '*.test.mts', '*.test.mtsx'],
+      files: ['*.test.ts', '*.test.mts'],
       rules: {
         'no-restricted-imports': 'off',
         'typescript/ban-ts-comment': 'off',
