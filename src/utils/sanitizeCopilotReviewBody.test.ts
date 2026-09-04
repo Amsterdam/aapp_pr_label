@@ -1,7 +1,7 @@
 import {sanitizeCopilotReviewBody} from './sanitizeCopilotReviewBody'
 
 describe('sanitizeCopilotReviewBody', () => {
-  it('returns only the Pull request overview section contents', () => {
+  it('returns the Pull request overview and File summaries section contents', () => {
     const reviewBody = `### 🟡 Changes recommended
 
 This pull request still needs a couple of follow-up changes before it is ready.
@@ -54,7 +54,16 @@ if (featureEnabled) {
 
 **Changes:**
 - Add a mock service configuration file used by the example integration tests.
-- Update the sample docs to describe the new feature flag behavior.`)
+- Update the sample docs to describe the new feature flag behavior.
+
+<details>
+<summary>File summaries</summary>
+
+| File | Description |
+| ---- | ----------- |
+| src/example-feature.ts | Adds placeholder feature flag handling for test data. |
+| docs/example-feature.md | Documents the sample feature flow. |
+</details>`)
   })
 
   it('returns an empty string when the Pull request overview section is missing', () => {
@@ -66,6 +75,10 @@ if (featureEnabled) {
 
 Only file summaries are present.
 </details>`),
-    ).toBe('')
+    ).toBe(`<details>
+<summary>File summaries</summary>
+
+Only file summaries are present.
+</details>`)
   })
 })

@@ -27587,6 +27587,8 @@ var loadConfig = async () => {
 var HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
 var DETAILS_OPEN_TAG = "<details>";
 var DETAILS_CLOSE_TAG = "</details>";
+var PULL_REQUEST_OVERVIEW_SUMMARY_TAG = "<summary>Pull request overview</summary>";
+var FILE_SUMMARIES_SUMMARY_TAG = "<summary>File summaries</summary>";
 var REVIEWED_STATES = /* @__PURE__ */ new Set([
   "APPROVED",
   "CHANGES_REQUESTED",
@@ -31933,17 +31935,15 @@ var getTouchedFilesLabels = (changedFiles, config) => {
 };
 
 // src/utils/sanitizeCopilotReviewBody.ts
-var sanitizeCopilotReviewBody = (reviewBody) => {
-  const reviewLines = reviewBody.replaceAll("\r\n", "\n").split("\n");
-  const overviewSummaryTag = "<summary>Pull request overview</summary>";
-  const overviewStartLineIndex = reviewLines.findIndex(
-    (line) => line.trim().toLowerCase() === overviewSummaryTag.toLowerCase()
+var getSectionContent = (reviewLines, summaryTag) => {
+  const sectionStartLineIndex = reviewLines.findIndex(
+    (line) => line.trim().toLowerCase() === summaryTag.toLowerCase()
   );
-  if (overviewStartLineIndex === -1) {
+  if (sectionStartLineIndex === -1) {
     return "";
   }
   const sanitizedLines = [];
-  for (const line of reviewLines.slice(overviewStartLineIndex + 1)) {
+  for (const line of reviewLines.slice(sectionStartLineIndex + 1)) {
     const trimmedLine = line.trim();
     if (trimmedLine === DETAILS_CLOSE_TAG) {
       break;
@@ -31953,6 +31953,25 @@ var sanitizeCopilotReviewBody = (reviewBody) => {
     }
   }
   return sanitizedLines.join("\n").trim();
+};
+var sanitizeCopilotReviewBody = (reviewBody) => {
+  const reviewLines = reviewBody.replaceAll("\r\n", "\n").split("\n");
+  const overviewContent = getSectionContent(
+    reviewLines,
+    PULL_REQUEST_OVERVIEW_SUMMARY_TAG
+  );
+  const fileSummariesContent = getSectionContent(
+    reviewLines,
+    FILE_SUMMARIES_SUMMARY_TAG
+  );
+  return [
+    overviewContent,
+    fileSummariesContent && `${DETAILS_OPEN_TAG}
+${FILE_SUMMARIES_SUMMARY_TAG}
+
+${fileSummariesContent}
+${DETAILS_CLOSE_TAG}`
+  ].filter(Boolean).join("\n\n");
 };
 
 // src/utils/updatePRText.ts
