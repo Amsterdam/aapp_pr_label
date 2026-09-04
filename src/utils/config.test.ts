@@ -6,16 +6,21 @@ import path from 'node:path'
 import {pathToFileURL} from 'node:url'
 import {loadConfig} from './config'
 
-jest.mock('@actions/core', () => ({
-  getBooleanInput: jest.fn((inputName: string) => {
-    const inputValue = process.env[`INPUT_${inputName.toUpperCase()}`]
+jest.mock(
+  '@actions/core',
+  () => ({
+    getBooleanInput: jest.fn((inputName: string) => {
+      const inputValue = process.env[`INPUT_${inputName.toUpperCase()}`]
 
-    return inputValue?.toLowerCase() === 'true'
+      return inputValue?.toLowerCase() === 'true'
+    }),
+    getInput: jest.fn(
+      (inputName: string) =>
+        process.env[`INPUT_${inputName.toUpperCase()}`] ?? '',
+    ),
   }),
-  getInput: jest.fn(
-    (inputName: string) => process.env[`INPUT_${inputName.toUpperCase()}`] ?? '',
-  ),
-}), {virtual: true})
+  {virtual: true},
+)
 
 const originalArguments = [...process.argv]
 const originalWorkingDirectory = process.cwd()
@@ -81,10 +86,7 @@ const loadConfigFromDirectory = async ({
   workingDirectory: string
 }): Promise<Awaited<ReturnType<typeof loadConfig>>> => {
   process.chdir(workingDirectory)
-  process.argv = argumentsOverride ?? [
-    'node',
-    'src/pr-label.ts',
-  ]
+  process.argv = argumentsOverride ?? ['node', 'src/pr-label.ts']
 
   if (prLabelConfig === undefined) {
     delete process.env.PR_LABEL_CONFIG
@@ -199,12 +201,7 @@ describe('loadConfig', () => {
     const config = await loadConfigFromDirectory({
       workingDirectory: temporaryDirectory,
       prLabelConfig: 'environment.json',
-      argumentsOverride: [
-        'node',
-        'src/pr-label.ts',
-        '--config',
-        'cli.json',
-      ],
+      argumentsOverride: ['node', 'src/pr-label.ts', '--config', 'cli.json'],
     })
 
     expect(config.copilotReadyLabel).toBe('cli')
@@ -334,10 +331,7 @@ describe('loadConfig', () => {
         name: 'docs',
       },
     })
-    expect(config.reviewerUsernames).toEqual([
-      'reviewer-one',
-      'reviewer-two',
-    ])
+    expect(config.reviewerUsernames).toEqual(['reviewer-one', 'reviewer-two'])
   })
 
   it('parses YAML labels action input', async () => {
