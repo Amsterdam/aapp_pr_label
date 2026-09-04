@@ -1,6 +1,5 @@
 import {defineConfig} from 'oxlint'
 
-
 export default defineConfig({
   plugins: ['typescript', 'unicorn', 'oxc'],
   categories: {
@@ -32,10 +31,5 @@ export default defineConfig({
       },
     },
   ],
-  ignorePatterns: [
-    '!.*',
-    'node_modules',
-    '.git',
-    '.jest',
-  ],
+  ignorePatterns: ['!.*', 'node_modules', '.git', '.jest', 'dist'],
 })

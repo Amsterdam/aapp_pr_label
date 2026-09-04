@@ -1,5 +1,5 @@
-name: "Pr-label"
-description: "Add labels to a github PR"
+name: 'Pr-label'
+description: 'Add labels to a github PR'
 inputs:
   token:
     description: >
