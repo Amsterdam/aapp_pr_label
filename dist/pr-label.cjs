@@ -27585,9 +27585,10 @@ var loadConfig = async () => {
 
 // src/utils/constants.ts
 var HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
-var REVIEWED_CHANGES_HEADING = "### Reviewed changes";
 var DETAILS_OPEN_TAG = "<details>";
 var DETAILS_CLOSE_TAG = "</details>";
+var PULL_REQUEST_OVERVIEW_SUMMARY_TAG = "<summary>Pull request overview</summary>";
+var FILE_SUMMARIES_SUMMARY_TAG = "<summary>File summaries</summary>";
 var REVIEWED_STATES = /* @__PURE__ */ new Set([
   "APPROVED",
   "CHANGES_REQUESTED",
@@ -31934,35 +31935,43 @@ var getTouchedFilesLabels = (changedFiles, config) => {
 };
 
 // src/utils/sanitizeCopilotReviewBody.ts
-var sanitizeCopilotReviewBody = (reviewBody) => {
-  const reviewLines = reviewBody.replaceAll("\r\n", "\n").split("\n");
-  const reviewedChangesLineIndex = reviewLines.findIndex(
-    (line) => line.trim().toLowerCase() === REVIEWED_CHANGES_HEADING.toLowerCase()
+var getSectionContent = (reviewLines, summaryTag) => {
+  const sectionStartLineIndex = reviewLines.findIndex(
+    (line) => line.trim().toLowerCase() === summaryTag.toLowerCase()
   );
-  const linesBeforeReviewedChanges = reviewedChangesLineIndex === -1 ? reviewLines : reviewLines.slice(0, reviewedChangesLineIndex);
+  if (sectionStartLineIndex === -1) {
+    return "";
+  }
   const sanitizedLines = [];
-  let isInsideDetailsBlock = false;
-  for (const line of linesBeforeReviewedChanges) {
+  for (const line of reviewLines.slice(sectionStartLineIndex + 1)) {
     const trimmedLine = line.trim();
-    const isOpeningDetailsTag = trimmedLine === DETAILS_OPEN_TAG;
-    const isClosingDetailsTag = trimmedLine === DETAILS_CLOSE_TAG;
-    if (isOpeningDetailsTag) {
-      isInsideDetailsBlock = true;
+    if (trimmedLine === DETAILS_CLOSE_TAG) {
+      break;
     }
-    if (isClosingDetailsTag) {
-      isInsideDetailsBlock = false;
-    }
-    if (!isOpeningDetailsTag && !isClosingDetailsTag && !isInsideDetailsBlock) {
+    if (trimmedLine !== DETAILS_OPEN_TAG) {
       sanitizedLines.push(line);
     }
   }
-  const horizontalRuleLineIndex = sanitizedLines.findIndex(
-    (line) => line.trim() === "---"
-  );
-  if (horizontalRuleLineIndex !== -1) {
-    sanitizedLines.splice(horizontalRuleLineIndex);
-  }
   return sanitizedLines.join("\n").trim();
+};
+var sanitizeCopilotReviewBody = (reviewBody) => {
+  const reviewLines = reviewBody.replaceAll("\r\n", "\n").split("\n");
+  const overviewContent = getSectionContent(
+    reviewLines,
+    PULL_REQUEST_OVERVIEW_SUMMARY_TAG
+  );
+  const fileSummariesContent = getSectionContent(
+    reviewLines,
+    FILE_SUMMARIES_SUMMARY_TAG
+  );
+  return [
+    overviewContent,
+    fileSummariesContent && `${DETAILS_OPEN_TAG}
+${FILE_SUMMARIES_SUMMARY_TAG}
+
+${fileSummariesContent}
+${DETAILS_CLOSE_TAG}`
+  ].filter(Boolean).join("\n\n");
 };
 
 // src/utils/updatePRText.ts
