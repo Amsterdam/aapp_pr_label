@@ -27585,7 +27585,6 @@ var loadConfig = async () => {
 
 // src/utils/constants.ts
 var HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
-var REVIEWED_CHANGES_HEADING = "### Reviewed changes";
 var DETAILS_OPEN_TAG = "<details>";
 var DETAILS_CLOSE_TAG = "</details>";
 var REVIEWED_STATES = /* @__PURE__ */ new Set([
@@ -31936,31 +31935,22 @@ var getTouchedFilesLabels = (changedFiles, config) => {
 // src/utils/sanitizeCopilotReviewBody.ts
 var sanitizeCopilotReviewBody = (reviewBody) => {
   const reviewLines = reviewBody.replaceAll("\r\n", "\n").split("\n");
-  const reviewedChangesLineIndex = reviewLines.findIndex(
-    (line) => line.trim().toLowerCase() === REVIEWED_CHANGES_HEADING.toLowerCase()
+  const overviewSummaryTag = "<summary>Pull request overview</summary>";
+  const overviewStartLineIndex = reviewLines.findIndex(
+    (line) => line.trim().toLowerCase() === overviewSummaryTag.toLowerCase()
   );
-  const linesBeforeReviewedChanges = reviewedChangesLineIndex === -1 ? reviewLines : reviewLines.slice(0, reviewedChangesLineIndex);
+  if (overviewStartLineIndex === -1) {
+    return "";
+  }
   const sanitizedLines = [];
-  let isInsideDetailsBlock = false;
-  for (const line of linesBeforeReviewedChanges) {
+  for (const line of reviewLines.slice(overviewStartLineIndex + 1)) {
     const trimmedLine = line.trim();
-    const isOpeningDetailsTag = trimmedLine === DETAILS_OPEN_TAG;
-    const isClosingDetailsTag = trimmedLine === DETAILS_CLOSE_TAG;
-    if (isOpeningDetailsTag) {
-      isInsideDetailsBlock = true;
+    if (trimmedLine === DETAILS_CLOSE_TAG) {
+      break;
     }
-    if (isClosingDetailsTag) {
-      isInsideDetailsBlock = false;
-    }
-    if (!isOpeningDetailsTag && !isClosingDetailsTag && !isInsideDetailsBlock) {
+    if (trimmedLine !== DETAILS_OPEN_TAG) {
       sanitizedLines.push(line);
     }
-  }
-  const horizontalRuleLineIndex = sanitizedLines.findIndex(
-    (line) => line.trim() === "---"
-  );
-  if (horizontalRuleLineIndex !== -1) {
-    sanitizedLines.splice(horizontalRuleLineIndex);
   }
   return sanitizedLines.join("\n").trim();
 };

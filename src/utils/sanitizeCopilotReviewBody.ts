@@ -1,47 +1,28 @@
-import {
-  DETAILS_CLOSE_TAG,
-  DETAILS_OPEN_TAG,
-  REVIEWED_CHANGES_HEADING,
-} from './constants'
+import {DETAILS_CLOSE_TAG, DETAILS_OPEN_TAG} from './constants'
 
 export const sanitizeCopilotReviewBody = (reviewBody: string): string => {
   const reviewLines = reviewBody.replaceAll('\r\n', '\n').split('\n')
-  const reviewedChangesLineIndex = reviewLines.findIndex(
-    line =>
-      line.trim().toLowerCase() === REVIEWED_CHANGES_HEADING.toLowerCase(),
+  const overviewSummaryTag = '<summary>Pull request overview</summary>'
+  const overviewStartLineIndex = reviewLines.findIndex(
+    line => line.trim().toLowerCase() === overviewSummaryTag.toLowerCase(),
   )
-  const linesBeforeReviewedChanges =
-    reviewedChangesLineIndex === -1
-      ? reviewLines
-      : reviewLines.slice(0, reviewedChangesLineIndex)
 
-  const sanitizedLines: string[] = []
-  let isInsideDetailsBlock = false
-
-  for (const line of linesBeforeReviewedChanges) {
-    const trimmedLine = line.trim()
-    const isOpeningDetailsTag = trimmedLine === DETAILS_OPEN_TAG
-    const isClosingDetailsTag = trimmedLine === DETAILS_CLOSE_TAG
-
-    if (isOpeningDetailsTag) {
-      isInsideDetailsBlock = true
-    }
-
-    if (isClosingDetailsTag) {
-      isInsideDetailsBlock = false
-    }
-
-    if (!isOpeningDetailsTag && !isClosingDetailsTag && !isInsideDetailsBlock) {
-      sanitizedLines.push(line)
-    }
+  if (overviewStartLineIndex === -1) {
+    return ''
   }
 
-  const horizontalRuleLineIndex = sanitizedLines.findIndex(
-    line => line.trim() === '---',
-  )
+  const sanitizedLines: string[] = []
 
-  if (horizontalRuleLineIndex !== -1) {
-    sanitizedLines.splice(horizontalRuleLineIndex)
+  for (const line of reviewLines.slice(overviewStartLineIndex + 1)) {
+    const trimmedLine = line.trim()
+
+    if (trimmedLine === DETAILS_CLOSE_TAG) {
+      break
+    }
+
+    if (trimmedLine !== DETAILS_OPEN_TAG) {
+      sanitizedLines.push(line)
+    }
   }
 
   return sanitizedLines.join('\n').trim()
