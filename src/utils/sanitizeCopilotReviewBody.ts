@@ -1,7 +1,6 @@
 import {
   DETAILS_CLOSE_TAG,
   DETAILS_OPEN_TAG,
-  FILE_SUMMARIES_SUMMARY_TAG,
   PULL_REQUEST_OVERVIEW_SUMMARY_TAG,
 } from './constants'
 
@@ -41,16 +40,5 @@ export const sanitizeCopilotReviewBody = (reviewBody: string): string => {
     PULL_REQUEST_OVERVIEW_SUMMARY_TAG,
   )
 
-  const fileSummariesContent = getSectionContent(
-    reviewLines,
-    FILE_SUMMARIES_SUMMARY_TAG,
-  )
-
-  return [
-    overviewContent,
-    fileSummariesContent &&
-      `${DETAILS_OPEN_TAG}\n${FILE_SUMMARIES_SUMMARY_TAG}\n\n${fileSummariesContent}\n${DETAILS_CLOSE_TAG}`,
-  ]
-    .filter(Boolean)
-    .join('\n\n')
+  return overviewContent
 }

@@ -9,22 +9,13 @@ This pull request still needs a couple of follow-up changes before it is ready.
 *Once you've addressed the issues Copilot identified, you can request another Copilot review.*
 
 <details>
-<summary>Pull request overview</summary>
+<summary><strong>What changed in this PR</strong></summary>
 
 Introduces a sample feature flag flow and updates supporting documentation for the example project.
 
 **Changes:**
 - Add a mock service configuration file used by the example integration tests.
 - Update the sample docs to describe the new feature flag behavior.
-</details>
-
-<details>
-<summary>File summaries</summary>
-
-| File | Description |
-| ---- | ----------- |
-| src/example-feature.ts | Adds placeholder feature flag handling for test data. |
-| docs/example-feature.md | Documents the sample feature flow. |
 </details>
 
 <details>
@@ -54,31 +45,6 @@ if (featureEnabled) {
 
 **Changes:**
 - Add a mock service configuration file used by the example integration tests.
-- Update the sample docs to describe the new feature flag behavior.
-
-<details>
-<summary>File summaries</summary>
-
-| File | Description |
-| ---- | ----------- |
-| src/example-feature.ts | Adds placeholder feature flag handling for test data. |
-| docs/example-feature.md | Documents the sample feature flow. |
-</details>`)
-  })
-
-  it('returns an empty string when the Pull request overview section is missing', () => {
-    expect(
-      sanitizeCopilotReviewBody(`### 🟡 Changes recommended
-
-<details>
-<summary>File summaries</summary>
-
-Only file summaries are present.
-</details>`),
-    ).toBe(`<details>
-<summary>File summaries</summary>
-
-Only file summaries are present.
-</details>`)
+- Update the sample docs to describe the new feature flag behavior.`)
   })
 })
