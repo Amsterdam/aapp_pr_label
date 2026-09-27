@@ -27587,8 +27587,7 @@ var loadConfig = async () => {
 var HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
 var DETAILS_OPEN_TAG = "<details>";
 var DETAILS_CLOSE_TAG = "</details>";
-var PULL_REQUEST_OVERVIEW_SUMMARY_TAG = "<summary>Pull request overview</summary>";
-var FILE_SUMMARIES_SUMMARY_TAG = "<summary>File summaries</summary>";
+var PULL_REQUEST_OVERVIEW_SUMMARY_TAG = "<summary><strong>What changed in this PR</strong></summary>";
 var REVIEWED_STATES = /* @__PURE__ */ new Set([
   "APPROVED",
   "CHANGES_REQUESTED",
@@ -31960,18 +31959,7 @@ var sanitizeCopilotReviewBody = (reviewBody) => {
     reviewLines,
     PULL_REQUEST_OVERVIEW_SUMMARY_TAG
   );
-  const fileSummariesContent = getSectionContent(
-    reviewLines,
-    FILE_SUMMARIES_SUMMARY_TAG
-  );
-  return [
-    overviewContent,
-    fileSummariesContent && `${DETAILS_OPEN_TAG}
-${FILE_SUMMARIES_SUMMARY_TAG}
-
-${fileSummariesContent}
-${DETAILS_CLOSE_TAG}`
-  ].filter(Boolean).join("\n\n");
+  return overviewContent;
 };
 
 // src/utils/updatePRText.ts

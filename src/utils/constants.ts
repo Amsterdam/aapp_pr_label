@@ -3,8 +3,7 @@ export const DETAILS_OPEN_TAG = '<details>'
 export const DETAILS_CLOSE_TAG = '</details>'
 
 export const PULL_REQUEST_OVERVIEW_SUMMARY_TAG =
-  '<summary>Pull request overview</summary>'
-export const FILE_SUMMARIES_SUMMARY_TAG = '<summary>File summaries</summary>'
+  '<summary><strong>What changed in this PR</strong></summary>'
 
 export const REVIEWED_STATES = new Set([
   'APPROVED',
